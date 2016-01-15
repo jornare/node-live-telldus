@@ -30,7 +30,7 @@ API
         token: 'your token here',
         tokenSecret: 'your token secret here'
     },
-    TelldusLive = require('telldus-live-es2015'),
+    TelldusLive = require('node-live-telldus'),
     telldus = new TelldusLive(config);
 
     telldus.getUser().then(user => {

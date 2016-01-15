@@ -1,7 +1,7 @@
 {
   "name": "node-live-telldus",
   "version": "0.0.2",
-  "description": "A node.js module to interface with Telldus Live API. Written in ECMAScript2015 using classes, arrow functions and native promises.",
+  "description": "A node.js module to interface with Telldus Live API.\nWritten in ECMAScript2015 using classes, arrow functions and native promises.",
   "author": {
     "name": "Jørn Are Hatlelid",
     "email": "jornare@hatlelid.net"
