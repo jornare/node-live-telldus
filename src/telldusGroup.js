@@ -2,9 +2,8 @@
 let constants = require('./constants.js');
 
 class TelldusGroup {
-  constructor(telldus, data) {
+  constructor(data) {
     data = data || {};
-    this.telldus = telldus;
     this.id = 
     this.client = null;
     this.name = '';

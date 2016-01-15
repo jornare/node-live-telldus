@@ -5,9 +5,8 @@ let constants = require('./constants.js'),
     querystring = require('querystring');
 
 class TelldusUser {
-  constructor(telldus, data) {
+  constructor(data) {
     data = data || {};
-    //this.telldus = telldus;
     this.data = data || null;
     this.firstname = data.firstname || '';
     this.lastname = data.lastname || '';
@@ -44,7 +43,7 @@ class TelldusUser {
   }
   
   unregisterPushToken(token) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/user/unregisterPushToken?' + querystring.stringify(
                             { token: token}).then( result =>
         {
@@ -54,7 +53,7 @@ class TelldusUser {
   }
   
   deletePushToken(token) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/user/deletePushToken?' + querystring.stringify(
                             { token: token}).then( result =>
         {
@@ -64,7 +63,7 @@ class TelldusUser {
   }
   
   getPhones() {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/user/listPhones').then( result =>
         {
           this.phones = result.phone;
@@ -75,7 +74,7 @@ class TelldusUser {
   
   getClients() {
     let extras = 'coordinate,features,latestversion,suntime,timezone,transports,tzoffset';
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/clients/list?' + querystring.stringify(
                             { extras: extras})).then( result =>
         {

@@ -1,11 +1,11 @@
 'use strict';
 let constants = require('./constants.js'),
-    querystring = require('querystring');
+    querystring = require('querystring'),
+    telldus = require('./telldusLive').getInstance();
 
 class TelldusClient {
-  constructor(telldus, id, uuid, name) {
+  constructor(id, uuid, name) {
     this.extras = ['coordinate', 'features', 'latestversion', 'suntime', 'timezone', 'transports', 'tzoffset'];
-    this.telldus = telldus;
     this.id = id;
     this.uuid = uuid;
     this.name = name;
@@ -30,7 +30,7 @@ class TelldusClient {
   }
 
   getInfo() {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/client/getInfo?' + querystring.stringify(
                             { id: this.id, extras: this.extras.join(',')}).then( result =>
         {
@@ -56,7 +56,7 @@ class TelldusClient {
   
  
   setName(name) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/client/setName?' + querystring.stringify(
                             { id: this.id,
                             name: name}).then( result =>
@@ -68,7 +68,7 @@ class TelldusClient {
   }
   
   setPush(enable) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/client/setPush?' + querystring.stringify(
                             { id: this.id,
                             enable: enable ? '1' : '0'}).then( result =>

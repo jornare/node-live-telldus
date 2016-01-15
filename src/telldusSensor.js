@@ -1,9 +1,9 @@
 'use strict';
-let querystring = require('querystring');
+let querystring = require('querystring'),
+    telldus = require('./telldusLive.js').getInstance();
 
 class TelldusSensor {
-  constructor(telldus, data) {
-    this.telldus = telldus;
+  constructor(data) {
     this.id = data.id;
     this.sensorId = data.sensorId;    
     this.name = data.name;
@@ -17,9 +17,9 @@ class TelldusSensor {
     this.model = data.model;
     this.data = data.data || [];
     if(data.hasOwnProperty('client')) {
-      this.client = this.telldus.getClientById(data.client);
+      this.client = telldus.getClientById(data.client);
       if(!this.client) {
-        this.client = this.telldus.addClient(data.client, data.clientName);
+        this.client = telldus.addClient(data.client, data.clientName);
       }
     }
   }
@@ -36,7 +36,7 @@ class TelldusSensor {
   }
   //Telldus does not allow this method to be called more often than every 10 minutes
   getInfo() {
-    return this.telldus.invoke('GET', '/sensor/info?' + querystring.stringify({ id: this.id })).then( result =>
+    return telldus.invoke('GET', '/sensor/info?' + querystring.stringify({ id: this.id })).then( result =>
         {
           this.name = result.name;
           this.lastUpdated = result.lastUpdated;
@@ -46,7 +46,7 @@ class TelldusSensor {
           this.keepHistory = result.keepHistory;
           this.data = result.data;
           
-          console.log(result);
+          //console.log(result);
           //this.sensors = result.sensor;
           return this;
         }
@@ -54,7 +54,7 @@ class TelldusSensor {
   }
   
   setName(name) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/sensor/setName?' + querystring.stringify({ id: this.id, name: name }).then( result =>
         {
           this.name = name;

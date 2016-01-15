@@ -7,12 +7,12 @@ let events      = require('events'),
     querystring = require('querystring'),
     underscore  = require('underscore'),
     util        = require('util'),
-    TelldusSensor = require('./telldusSensor.js'),
-    TelldusDevice = require('./telldusDevice.js'),
-    TelldusUser = require('./telldusUser.js'),
-    TelldusClient = require('./telldusClient.js'),
-    TelldusGroup = require('./telldusGroup.js'),
-    TelldusEvent = require('./telldusEvent.js'),
+    TelldusSensor = null,
+    TelldusDevice = null,
+    TelldusUser = null,
+    TelldusClient = null,
+    TelldusGroup = null,
+    TelldusEvent = null,
     constants = require('./constants.js'),
     instance = null;
 
@@ -24,6 +24,13 @@ class TelldusLive {
         console.log('You need to update your configuration file');
         process.exit(1);
     }
+    instance = this;
+    TelldusSensor = require('./telldusSensor.js');
+    TelldusDevice = require('./telldusDevice.js');
+    TelldusUser = require('./telldusUser.js');
+    TelldusClient = require('./telldusClient.js');
+    TelldusGroup = require('./telldusGroup.js');
+    TelldusEvent = require('./telldusEvent.js');  
     this.options = options;    
     this.oauth = new oauth.OAuth(null, null, this.options.publicKey, this.options.privateKey, '1.0', null, 'HMAC-SHA1');
     this.user = new TelldusUser(this);
@@ -39,7 +46,6 @@ class TelldusLive {
     this.groupsByNameIndex = {};
     this.events = [];
     this.eventsByIdIndex = {};
-    instance = this;
     return this;
   }
   
@@ -80,7 +86,7 @@ class TelldusLive {
   getUser() {
       return this.invoke('GET', '/user/profile').then( result =>
         {
-          this.user = new TelldusUser(this, result);
+          this.user = new TelldusUser(result);
           return this.user;
         }, err => {
           console.log(err);
@@ -95,16 +101,16 @@ class TelldusLive {
   }
   
   addClient(id, uuid) {
-    return this.telldus.invoke('GET',
+    return this.invoke('GET',
                         '/client/register?' + querystring.stringify(
                             { id: id,
-                            uuid: uuid }).then( result =>
+                            uuid: uuid })).then( result =>
         {
-          let client = new TelldusClient(this.telldus, id, uuid, uuid);
+          let client = new TelldusClient(id, uuid, uuid);
           this.clients.push(client);
           return client;
         }
-      ));
+      );
   }
 
   getSensors(includeIgnored, includeValues, includeScale) {
@@ -113,7 +119,7 @@ class TelldusLive {
         {
           console.log(result);
           result.sensor.forEach(s => {
-            let sensor = new TelldusSensor(this, s);
+            let sensor = new TelldusSensor(s);
             this.sensors.push(sensor);
             this.sensorsByIdIndex[sensor.id] = sensor;
             this.sensorsByNameIndex[sensor.name] = sensor;
@@ -127,7 +133,7 @@ class TelldusLive {
     return this.invoke('GET', '/devices/list?' + querystring.stringify({ supportedMethods: constants.SUPPORTED_METHODS, extras: constants.EXTRAS })).then( result =>
         {
           result.device.forEach(d => {
-            let device = new TelldusDevice(this, d);   
+            let device = new TelldusDevice(d);   
             this.devices.push(device);
             this.devicesByIdIndex[device.id] = device;
             this.devicesByNameIndex[device.name] = device;
@@ -162,7 +168,7 @@ class TelldusLive {
             protocol: protocol,
             model: model })).then( result =>
         {
-            let device = new TelldusDevice(this, result);
+            let device = new TelldusDevice(result);
             this.devices.push(device);
             this.devicesByIdIndex[device.id] = device;
             this.devicesByNameIndex[device.name] = device;
@@ -211,7 +217,7 @@ class TelldusLive {
     return this.invoke('GET', '/events/list?listOnly=1').then( result =>
         {
           result.event.forEach(e => {
-            let event = new TelldusEvent(this, e);   
+            let event = new TelldusEvent(e);   
             this.events.push(event);
             this.eventsByIdIndex[event.id] = event;
           });

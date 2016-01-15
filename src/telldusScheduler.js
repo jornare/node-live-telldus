@@ -1,16 +1,16 @@
 'use strict';
 let constants = require('./constants.js'),
-    TelldusJob = require('./telldusJob.js');
+    TelldusJob = require('./telldusJob.js'),
+    telldus = require('./telldusLive.js').getInstance();
 
 class TelldusScheduler {
-  constructor(telldus, data) {
+  constructor(data) {
     data = data || {};
-    this.telldus = telldus;
     this.jobs = [];
   }
   
   getJobs() {
-    return this.invoke('GET', '/scheduler/jobList').then( result =>
+    return telldus.invoke('GET', '/scheduler/jobList').then( result =>
         {
           this.jobs = []; //todo: update jobs, not replace
           result.job.forEach(j => {
@@ -23,7 +23,7 @@ class TelldusScheduler {
   }
   
   removeJob(job) {
-    return this.invoke('GET', '/scheduler/removeJob?id=' + job.id).then( result =>
+    return telldus.invoke('GET', '/scheduler/removeJob?id=' + job.id).then( result =>
         {
           this.jobs.splice(this.jobs.indexOf(job), 1);
         }

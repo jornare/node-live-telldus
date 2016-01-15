@@ -1,10 +1,10 @@
 'use strict';
 let querystring = require('querystring'),
-    constants = require('./constants');
+    constants = require('./constants'),
+    telldus = require('./telldusLive').getInstance();
 
 class TelldusDevice {
-  constructor(telldus, data) {
-    this.telldus = telldus;
+  constructor(data) {
     this.populate(data || {});
   }
   //private
@@ -29,9 +29,9 @@ class TelldusDevice {
     this.transport = data.transport || '';
     
     if(data.hasOwnProperty('client')) {
-      this.client = this.telldus.getClientById(data.client);
+      this.client = telldus.getClientById(data.client);
       if(!this.client) {
-        this.client = this.telldus.addClient(data.client, data.clientName);
+        this.client = telldus.addClient(data.client, data.clientName);
       }
     }   
   }
@@ -42,7 +42,7 @@ class TelldusDevice {
   
   getInfo() {
     let extras = 'coordinate,timezone,transport,tzoffset';
-    return this.telldus.invoke('GET', '/device/info?' + querystring.stringify({ id               : this.id
+    return telldus.invoke('GET', '/device/info?' + querystring.stringify({ id               : this.id
                                                                               , supportedMethods : constants.SUPPORTED_METHODS,
                                                                               extras: extras
                                                                               })).then( data =>
@@ -66,9 +66,9 @@ class TelldusDevice {
           data.hasOwnProperty('transport') && (this.transport = data.transport);
           
           if(data.hasOwnProperty('client')) {
-            this.client = this.telldus.getClientById(data.client);
+            this.client = telldus.getClientById(data.client);
             if(!this.client) {
-              this.client = this.telldus.addClient(data.client, data.clientName);
+              this.client = telldus.addClient(data.client, data.clientName);
             }
           }
           return this;
@@ -86,7 +86,7 @@ class TelldusDevice {
   }
   
   setName(name) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/setName?' + querystring.stringify({ id: this.id, name: name })).then( result =>
         {
           this.name = name;
@@ -97,12 +97,12 @@ class TelldusDevice {
   
  
   setModel(model) {
-    return this.telldus.invoke('GET', '/device/setModel?' + querystring.stringify({ id: this.id,
+    return telldus.invoke('GET', '/device/setModel?' + querystring.stringify({ id: this.id,
                                                                                     model: model }));
   }
   
   setParameter(parameter, value) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/setParameter?' + querystring.stringify({ id: this.id, parameter: parameter, value: value })).then( result =>
         {
           this.parameters[parameter] = value;
@@ -112,7 +112,7 @@ class TelldusDevice {
   }
   
   setProtocol(protocol) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/setProtocol?' + querystring.stringify({ id: this.id, protocol: protocol})).then( result =>
         {
           return this;
@@ -121,7 +121,7 @@ class TelldusDevice {
   }
   
   bell() {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/bell?' + querystring.stringify({ id: this.id})).then( result =>
         {
           this.setStatus('bell');
@@ -132,7 +132,7 @@ class TelldusDevice {
   
   command(method, value) {
     //if (!exports.commands[method]) return callback(new Error('unknown method: ' + method));
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/command?' + querystring.stringify({ id: this.id, method: method, value: value })).then( result =>
         {
           return this;
@@ -141,7 +141,7 @@ class TelldusDevice {
   }
 
   learn() {
-    return this.telldus.invoke('GET', '/device/learn?' + querystring.stringify({ id: this.id })).then( result =>
+    return telldus.invoke('GET', '/device/learn?' + querystring.stringify({ id: this.id })).then( result =>
         {
           return this;
         }
@@ -149,7 +149,7 @@ class TelldusDevice {
   }  
   
   dim(level) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/dim?' + querystring.stringify({ id: this.id, level: level})).then( result =>
         {
           this.setStatus('dim');
@@ -159,7 +159,7 @@ class TelldusDevice {
   }
   
   turnOnOff(on) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/turn' + (on ? 'On' : 'Off') + '?' + querystring.stringify({ id: this.id})).then( result =>
         {
           this.setStatus(on ? 'on' : 'off')
@@ -181,7 +181,7 @@ class TelldusDevice {
   }
   
   stop() {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/stop?' + querystring.stringify({ id: this.id})).then( result =>
         {
           this.setStatus('off');
@@ -191,7 +191,7 @@ class TelldusDevice {
   }
   
   upDown(up) {
-    return this.telldus.invoke('GET',
+    return telldus.invoke('GET',
                         '/device/' + (up ? 'up' : 'down') + '?' + querystring.stringify({ id: this.id})).then( result =>
         {
           return this;

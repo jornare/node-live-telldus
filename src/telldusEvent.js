@@ -38,9 +38,8 @@ class TelldusAction {
 }
 
 class TelldusEvent {
-  constructor(telldus, data) {
+  constructor(data) {
     data = data || {};
-    this.telldus = telldus;
     this.description = data.description || '';
     this.minRepeatInterval = data.minRepeatInterval || 0;
     this.active = data.active ? true : false;

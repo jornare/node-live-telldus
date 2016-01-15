@@ -2,10 +2,8 @@
 let constants = require('./constants.js');
 
 class TelldusJob {
-  constructor(telldus, data) {
+  constructor(data) {
     data = data || {};
-    this.telldus = telldus;
-
     this.id = data.id || 0;
     this.device = data.device || null; //todo: if id is given, get actual device
     this.method = data.method || '';
