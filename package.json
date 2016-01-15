@@ -11,7 +11,7 @@
     "url": "https://github.com/jornare/node-live-telldus.git"
   },
   "bugs": {
-    "url": "https://github.com/TheThingSystem/node-live-telldus/issues"
+    "url": "https://github.com/jornare/node-live-telldus/issues"
   },
   "dependencies": {
     "oauth": "~0.9.11"
